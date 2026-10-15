@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="督導記錄">
+<meta name="theme-color" content="#152B54">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>督導勤務記錄</title>
+<style>
+:root{
+  --ink:#141C2E; --ink2:#5A6478; --bg:#EEF1F6; --card:#FFFFFF;
+  --navy:#1E3A6E; --navy-d:#152B54; --gold:#B9922E; --gold-l:#F6EBD0;
+  --line:#D8DDE7; --ok:#1E7A46; --danger:#B3352C; --field:#F7F8FB;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+}
+header{
+  background:linear-gradient(160deg,var(--navy-d),var(--navy));color:#fff;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 10px;
+  position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(20,28,46,.25);
+}
+header h1{margin:0;font-size:18px;font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px}
+header h1::before{content:"";width:4px;height:18px;background:var(--gold);border-radius:2px}
+header .sub{font-size:12px;opacity:.75;margin-top:2px;letter-spacing:.05em}
+main{padding:12px 12px 0;max-width:640px;margin:0 auto}
+section,details.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(20,28,46,.06)}
+.sec-title{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:.12em;margin:0 0 10px;display:flex;align-items:center;gap:6px}
+.sec-title::after{content:"";flex:1;height:1px;background:var(--line)}
+.sec-title .badge{font-size:11px;font-weight:600;color:var(--ink2);letter-spacing:0}
+.sub-title{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.1em;margin:16px 0 8px;grid-column:1/-1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid .full{grid-column:1/-1}
+label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:4px;letter-spacing:.04em}
+label .col{color:var(--gold);font-weight:700;margin-right:3px}
+input,select,textarea{
+  width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;
+  font-size:16px;font-family:inherit;background:var(--field);color:var(--ink);
+  appearance:none;-webkit-appearance:none;
+}
+textarea{min-height:110px;resize:vertical;line-height:1.6}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A6478' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--navy);outline-offset:0;border-color:var(--navy);background:#fff}
+input::placeholder,textarea::placeholder{color:#A6AEC0}
+input.ocr-warn{border:2px solid var(--gold);background:var(--gold-l)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;min-height:34px}
+.chip{
+  padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:#fff;
+  font-size:14px;color:var(--navy);font-weight:600;cursor:pointer;font-family:inherit;
+}
+.chip:active{background:var(--navy);color:#fff}
+.chip.unknown{border-style:dashed;border-color:var(--gold);color:var(--gold)}
+.chip .cd{color:var(--gold);margin-right:4px;font-weight:700}
+.inline-btn{
+  padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;
+  font-size:14px;font-weight:700;color:var(--navy);cursor:pointer;white-space:nowrap;font-family:inherit;
+}
+.inline-btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
+.with-btn{display:flex;gap:8px}
+.with-btn input{flex:1;min-width:0}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:17px;font-weight:700;font-family:inherit;letter-spacing:.1em;cursor:pointer}
+.btn-add{background:var(--navy);color:#fff;box-shadow:0 3px 8px rgba(30,58,110,.3)}
+.btn-add:active{background:var(--navy-d)}
+.btn-cancel{background:#fff;color:var(--ink2);border:1px solid var(--line);margin-top:8px}
+.btn-cam{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  padding:13px;border-radius:12px;border:1.5px dashed var(--navy);background:#F3F6FB;
+  color:var(--navy);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.06em;
+}
+.btn-cam svg{width:22px;height:22px}
+.panel{border:1px solid var(--gold);background:#FFFCF4;border-radius:12px;padding:10px 12px;margin-top:10px}
+.panel .prow{display:grid;grid-template-columns:72px 76px 1fr;gap:8px;align-items:start;padding:6px 0;border-bottom:1px dashed #E8DDBF}
+.panel .prow:last-child{border-bottom:none}
+.panel .plabel{font-size:13px;font-weight:700;color:var(--ink2);padding-top:9px}
+.panel input{padding:8px;font-size:16px;text-align:center}
+.panel .chips{margin-top:0}
+.hint{font-size:12px;color:var(--ink2);margin-top:8px;line-height:1.6}
+.rec{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:flex-start;gap:10px;background:#fff}
+.rec.editing{outline:2px solid var(--gold)}
+.rec .no{min-width:30px;height:30px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.rec .body{flex:1;min-width:0}
+.rec .t1{font-weight:700;font-size:15px}
+.rec .t2{font-size:13px;color:var(--ink2);margin-top:2px;word-break:break-all}
+.rec .tag{display:inline-block;font-size:11px;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:5px;padding:0 5px;margin-left:6px;vertical-align:1px}
+.rec .acts{display:flex;flex-direction:column;gap:6px}
+.rec .acts button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--navy)}
+.rec .acts .del{color:var(--danger)}
+.empty{text-align:center;color:var(--ink2);font-size:14px;padding:18px 0}
+details.card summary{font-size:14px;font-weight:700;color:var(--navy);letter-spacing:.1em;cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:"＋";margin-left:auto;color:var(--gold)}
+details.card[open] summary::after{content:"－"}
+details.card[open] summary{margin-bottom:10px}
+.exportbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(255,255,255,.96);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  display:flex;gap:8px;align-items:center;max-width:640px;margin:0 auto;
+}
+.exportbar .count{font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap;line-height:1.2}
+.exportbar .count b{font-size:20px;color:var(--gold)}
+.exportbar button{flex:1;padding:12px 6px;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.04em}
+.exportbar .copy{background:var(--navy);color:#fff;border:none}
+.exportbar .cloud{background:var(--gold);color:#fff;border:none}
+.exportbar .xlsx{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+body.typing header{position:static;box-shadow:none}
+body.typing .exportbar{display:none}
+#toast{
+  position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-12px);
+  background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-size:14px;
+  font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:80;max-width:90vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{background:var(--ok)}
+#busy{position:fixed;inset:0;background:rgba(20,28,46,.55);z-index:70;display:none;align-items:center;justify-content:center;padding:24px}
+#busy .box{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:300px;text-align:center}
+#busy .msg{font-weight:700;margin-bottom:12px}
+#busy .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+#busy .bar i{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
+#busy .sub{font-size:12px;color:var(--ink2);margin-top:8px}
+#modal{position:fixed;inset:0;background:rgba(20,28,46,.55);z-index:75;display:none;align-items:center;justify-content:center;padding:20px}
+.mbox{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:360px;box-shadow:0 8px 30px rgba(20,28,46,.35);max-height:86vh;display:flex;flex-direction:column}
+.mmsg{font-size:15px;font-weight:700;white-space:pre-line;margin-bottom:12px;line-height:1.6}
+.mbox input{margin-bottom:12px}
+.mlist{overflow:auto;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;max-height:42vh}
+.mbtns{display:flex;gap:8px}
+.mbtns button{flex:1;padding:12px;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+.m-ok{background:var(--navy);color:#fff;border:none}
+.m-no{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+.m-ok.danger{background:var(--danger)}
+/* 框選器 */
+#picker{position:fixed;inset:0;background:#0B1120;z-index:60;display:none;flex-direction:column;color:#fff}
+#picker .pk-top{padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:#152B54}
+#picker .pk-step{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:.1em}
+#picker .pk-msg{font-size:16px;font-weight:700;margin-top:2px;line-height:1.45}
+#picker .pk-mode{font-size:12px;opacity:.8;margin-top:4px}
+#picker .pk-stage{flex:1;position:relative;overflow:hidden}
+#picker canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#picker .pk-bar{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#152B54}
+#picker .pk-bar button{flex:1;padding:12px 4px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:14px;font-weight:700;font-family:inherit}
+#picker .pk-bar button.on{background:var(--gold);border-color:var(--gold)}
+.tip{background:#FFF8E6;border:1px solid #EBD7A3;border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:12px;display:none;line-height:1.6}
+.tip b{color:var(--navy)}
+.ver{text-align:center;font-size:11px;color:var(--ink2);padding:6px 0 16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>督導勤務記錄</h1>
+  <div class="sub">拍照辨識・路途填報・A–AD 欄位對應</div>
+</header>
+
+<main>
+
+<div class="tip" id="installTip">
+  <b>建議加入主畫面：</b>用 Safari 開本頁 → 下方分享鈕 → 「加入主畫面」。之後從桌面圖示開啟，就像 APP 一樣，資料也保存得最穩。<br>
+  <b>注意：</b>加入主畫面後，請在桌面 APP 裡匯入名單設定碼。
+  <div style="text-align:right;margin-top:4px"><button class="inline-btn" style="padding:6px 12px" onclick="hideTip()">知道了</button></div>
+</div>
+
+<section>
+  <h2 class="sec-title">當班設定<span class="badge">自動帶入每筆紀錄</span></h2>
+  <div class="grid">
+    <div><label><span class="col">A</span>日期</label><input type="date" id="s_date"></div>
+    <div><label><span class="col">AB</span>執勤官</label><select id="s_officer"></select></div>
+    <div><label><span class="col">AC</span>執勤員</label><select id="s_member"></select></div>
+    <div><label><span class="col">AD</span>管制台</label><select id="s_controller"></select></div>
+  </div>
+</section>
+
+<section>
+  <h2 class="sec-title" id="formTitle">新增紀錄</h2>
+  <div class="grid">
+    <div><label><span class="col">B</span>分局</label><select id="f_bureau"></select></div>
+    <div><label><span class="col">C</span>派出所</label><select id="f_station"></select></div>
+
+    <div class="sub-title">一、服勤人員（18–19 時）</div>
+    <div class="full">
+      <button type="button" class="btn-cam" onclick="startDuty()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-2.5h6L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        拍勤務表・辨識代號
+      </button>
+      <div id="dutyPanel"></div>
+    </div>
+    <div><label><span class="col">D</span>值班</label><input id="f_duty" list="dlNames" placeholder="姓名" autocomplete="off"></div>
+    <div><label><span class="col">E</span>備勤</label><input id="f_standby" list="dlNames" placeholder="姓名" autocomplete="off"></div>
+
+    <div class="sub-title">三、抽呼巡邏員警</div>
+    <div><label><span class="col">F</span>巡邏（抽呼對象）</label><input id="f_patrol" list="dlNames" placeholder="姓名" autocomplete="off"></div>
+    <div><label><span class="col">G</span>勤務代號</label><input id="f_code" placeholder="如 0206" autocomplete="off" inputmode="numeric"></div>
+    <div class="full"><label><span class="col">H</span>抽呼時間（18 時 __ 分）</label>
+      <div class="with-btn"><input id="f_minutes" inputmode="numeric" placeholder="分" autocomplete="off"><button type="button" class="inline-btn gold" onclick="markCall()">抽呼（記下現在）</button></div>
+    </div>
+    <div class="full"><label><span class="col">I</span>所在位址</label><input id="f_location" placeholder="如 ○○路○段○號前" autocomplete="off"></div>
+
+    <div class="sub-title">五、110報案複查（報案證明單）</div>
+    <div class="full">
+      <button type="button" class="btn-cam" onclick="startReport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-2.5h6L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        拍報案證明單・辨識案號
+      </button>
+    </div>
+    <div class="full"><label><span class="col">J</span>e化案號</label><input id="f_ecase" placeholder="Z+6碼數字+AW+6碼英數" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+    <div><label><span class="col">K</span>案類</label><select id="f_caseType"></select></div>
+    <div><label><span class="col">L</span>受理時間</label><input id="f_acceptTime" placeholder="10122311" autocomplete="off" inputmode="numeric"></div>
+    <div class="full"><label><span class="col">M</span>處理員警</label>
+      <div class="with-btn"><input id="f_handler" list="dlNames" placeholder="姓名" autocomplete="off"><button type="button" class="inline-btn" onclick="pickHandler()">從名單選</button></div>
+      <div class="chips" id="handlerChips"></div>
+    </div>
+  </div>
+  <div class="hint" id="ocrHint" style="display:none">金框欄位是辨識結果，請對照紙本核對；修改後金框會消失。</div>
+  <div style="margin-top:14px">
+    <button class="btn btn-add" id="btnSave" onclick="saveRecord()">＋ 加入紀錄</button>
+    <button class="btn btn-cancel" id="btnCancel" style="display:none" onclick="cancelEdit()">取消編輯</button>
+  </div>
+  <div class="hint">N～AA 欄不需填寫，匯出時自動保留空格，貼上後欄位不會位移。</div>
+  <datalist id="dlNames"></datalist>
+</section>
+
+<section>
+  <h2 class="sec-title">已記錄清單<span class="badge" id="listBadge"></span></h2>
+  <div id="recList"><div class="empty">尚無紀錄，於上方輸入後加入</div></div>
+  <button class="btn btn-cancel" id="btnClear" style="display:none" onclick="clearAll()">清空全部紀錄</button>
+</section>
+
+<details class="card" id="setRoster">
+  <summary>派出所代號名冊</summary>
+  <div class="hint" style="margin-top:0">目前派出所：<b id="rosterStation">（請先選派出所）</b><br>每行一位：「代號 姓名」。拍勤務表時點選過的人會自動記在這裡。</div>
+  <textarea id="rosterText" placeholder="1 王大明&#10;2 李小華&#10;14 陳志強"></textarea>
+  <div class="with-btn" style="margin-top:8px"><button class="inline-btn" style="flex:1" onclick="saveRosterText()">儲存名冊</button><button class="inline-btn" style="flex:1;color:var(--danger)" onclick="clearRoster()">清空本所名冊</button></div>
+</details>
+
+<details class="card">
+  <summary>名單設定（執勤官／執勤員／管制台）</summary>
+  <div class="grid">
+    <div class="full"><label>執勤官（每行一位）</label><textarea id="l_officers"></textarea></div>
+    <div class="full"><label>執勤員（每行一位）</label><textarea id="l_members"></textarea></div>
+    <div class="full"><label>管制台（每行一位）</label><textarea id="l_controllers"></textarea></div>
+  </div>
+  <button class="inline-btn" style="width:100%;margin-top:10px" onclick="saveLists()">儲存名單</button>
+</details>
+
+<details class="card">
+  <summary>雲端同步（Google 試算表）</summary>
+  <div class="grid">
+    <div class="full"><label>Apps Script 網址</label><input id="c_url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" spellcheck="false"></div>
+    <div><label>通行碼</label><input id="c_token" placeholder="與程式碼中設定相同" autocomplete="off"></div>
+    <div style="display:flex;align-items:flex-end"><button type="button" class="inline-btn" style="width:100%" onclick="testCloud()">測試連線</button></div>
+  </div>
+  <div class="hint">按底部「上傳雲端」後，紀錄會寫入試算表「紀錄」工作表 A–AD 欄。</div>
+</details>
+
+<details class="card" id="setImport">
+  <summary>匯入設定碼／備份</summary>
+  <div class="hint" style="margin-top:0">貼上「名單設定碼」或備份內容後按匯入。名單只存在這支手機，不會上傳到網路。</div>
+  <textarea id="importText" placeholder="貼上設定碼（{ 開頭 }）"></textarea>
+  <div class="with-btn" style="margin-top:8px">
+    <button class="inline-btn gold" style="flex:1" onclick="importSettings()">匯入</button>
+    <button class="inline-btn" style="flex:1" onclick="document.getElementById('importFile').click()">選檔案匯入</button>
+  </div>
+  <input type="file" id="importFile" accept=".txt,.json,text/plain,application/json" style="display:none">
+  <button class="inline-btn" style="width:100%;margin-top:8px" onclick="exportSettings()">複製備份（名單＋名冊＋雲端設定）</button>
+  <div class="hint" id="dataStat"></div>
+</details>
+
+<div class="ver">版本 <span id="ver"></span>　<a href="#" onclick="location.reload();return false" style="color:var(--navy)">重新載入</a></div>
+
+</main>
+
+<div class="exportbar">
+  <div class="count"><b id="cnt">0</b> 筆</div>
+  <button class="copy" onclick="copyAll()">複製</button>
+  <button class="cloud" onclick="uploadCloud()">上傳雲端</button>
+  <button class="xlsx" onclick="downloadXlsx()">Excel</button>
+</div>
+
+<input type="file" id="photoInput" accept="image/*" style="display:none">
+
+<div id="picker">
+  <div class="pk-top"><div class="pk-step" id="pkStep"></div><div class="pk-msg" id="pkMsg"></div><div class="pk-mode" id="pkModeTxt"></div></div>
+  <div class="pk-stage" id="pkStage"><canvas id="pkCanvas"></canvas></div>
+  <div class="pk-bar">
+    <button id="pkMode" type="button">🔍 放大</button>
+    <button id="pkReset" type="button">全圖</button>
+    <button id="pkSkip" type="button">略過</button>
+    <button id="pkCancel" type="button">取消</button>
+  </div>
+</div>
+
+<div id="busy"><div class="box"><div class="msg" id="busyMsg">辨識中…</div><div class="bar"><i id="busyBar"></i></div><div class="sub" id="busySub"></div></div></div>
+<div id="toast"></div>
+<div id="modal"></div>
+
+<script>
+/* ═════════ 基本資料（公開資訊，不含任何人名） ═════════ */
+const VERSION = "2026.10.15";
+const BUREAUS = {
+"中正第一分局":["博愛路","忠孝西路","忠孝東路","介壽路","仁愛路"],
+"中正第二分局":["思源街","廈門街","南昌路","南海路","泉州街"],
+"大同分局":["寧夏路","民族路","重慶北路","延平","民生西路","建成"],
+"萬華分局":["西門町","龍山","東園街","西園路","莒光","華江","青年路","大理街","康定路"],
+"中山分局":["中山一","中山二","圓山","長春路","長安東路","民權一","建國","大直"],
+"大安分局":["新生南路","和平東路","安和路","瑞安街","敦化南路","羅斯福路","臥龍街"],
+"松山分局":["松山","中崙","三民","東社","民有"],
+"信義分局":["三張犁","五分埔","福德街","吳興街","六張犁"],
+"士林分局":["文林","社子","後港","天母","蘭雅","芝山岩","永福"],
+"北投分局":["長安","石牌","永明","光明","大屯","關渡","奇岩"],
+"文山第一分局":["木柵","木新","復興","指南","萬芳"],
+"文山第二分局":["景美","萬盛","興隆"],
+"南港分局":["同德","玉成","舊莊","南港"],
+"內湖分局":["內湖","文德","西湖","潭美","大湖","東湖","康樂","康寧","港墘"]
+};
+const CASE_TYPES = ["詐欺","竊盜","傷害","妨害電腦使用","妨害自由","妨害名譽","侵占","毀損","駕駛過失","背信","違反保護令罪","妨害性隱私及不實性影像","洗錢防制法","誣告","侵入住宅","失蹤","妨害秘密","妨害秩序","個資法","重利","重傷害","性騷擾防治法","妨害風化","遺失物","著作權法","偽造文書","其他"];
+const HEADERS = ["日期","分局","派出所","值班","備勤","巡邏","代號","時間","地點","e化案號","案類","受理時間","處理員警","案號","受理人員","登錄時間","斷話時間","使用時間","分局人員","分局派遣時間","110派遣時間","派出所人員","派出所接報","接報使用時間","到達人員","到達時間","到達使用時間","執勤官","執勤員","管制台"];
+const CUSTOM = "__custom__";
+const $ = id => document.getElementById(id);
+
+/* ═════════ 本機儲存 ═════════ */
+let mem = {};
+const store = {
+  get(k){ try{ return localStorage.getItem(k); }catch(e){ return mem[k] ?? null; } },
+  set(k,v){ try{ localStorage.setItem(k,v); }catch(e){ mem[k]=v; } },
+  getJSON(k,def){ try{ const v=this.get(k); return v?JSON.parse(v):def; }catch(e){ return def; } },
+  setJSON(k,v){ this.set(k, JSON.stringify(v)); }
+};
+
+/* ═════════ 狀態 ═════════ */
+let records = store.getJSON("supervise_records", []);
+let lists   = store.getJSON("supervise_lists", {officers:[],members:[],controllers:[]});
+let staffHist = store.getJSON("supervise_history", {});   // {派出所:[姓名...]}
+let roster  = store.getJSON("supervise_roster", {});    // {派出所:{代號:姓名}}
+let editingId = null, settingsSnapshot = null;
+let dutyResult = null;   // {station, duty:'14', patrol:'2.4', standby:'1'}
+
+/* ═════════ 視窗工具 ═════════ */
+let toastTimer;
+function toast(msg, ok){
+  const t=$("toast"); t.textContent=msg; t.className="show"+(ok?" ok":"");
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{ t.className=""; }, 2600);
+}
+function esc(s){ return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function modalOpen(html){ const m=$("modal"); m.innerHTML=html; m.style.display="flex"; return m; }
+function modalClose(){ $("modal").style.display="none"; $("modal").innerHTML=""; }
+function askConfirm(msg, danger){
+  return new Promise(res=>{
+    const m=modalOpen('<div class="mbox"><div class="mmsg"></div><div class="mbtns"><button type="button" class="m-no">取消</button><button type="button" class="m-ok'+(danger?' danger':'')+'">確定</button></div></div>');
+    m.querySelector(".mmsg").textContent=msg;
+    m.querySelector(".m-ok").onclick=()=>{modalClose();res(true);};
+    m.querySelector(".m-no").onclick=()=>{modalClose();res(false);};
+  });
+}
+function askInput(msg, val){
+  return new Promise(res=>{
+    const m=modalOpen('<div class="mbox"><div class="mmsg"></div><input id="minput" autocomplete="off"><div class="mbtns"><button type="button" class="m-no">取消</button><button type="button" class="m-ok">確定</button></div></div>');
+    m.querySelector(".mmsg").textContent=msg;
+    const inp=m.querySelector("#minput"); inp.value=val||""; setTimeout(()=>inp.focus(),80);
+    m.querySelector(".m-ok").onclick=()=>{const v=inp.value;modalClose();res(v);};
+    m.querySelector(".m-no").onclick=()=>{modalClose();res(null);};
+  });
+}
+// 選人：上方點選名單，下方可直接輸入
+function pickName(msg, names, val){
+  return new Promise(res=>{
+    const m=modalOpen('<div class="mbox"><div class="mmsg"></div><div class="mlist"></div><input id="minput" placeholder="或直接輸入姓名" autocomplete="off"><div class="mbtns"><button type="button" class="m-no">取消</button><button type="button" class="m-ok">確定</button></div></div>');
+    m.querySelector(".mmsg").textContent=msg;
+    const box=m.querySelector(".mlist"), inp=m.querySelector("#minput"); inp.value=val||"";
+    if(!names.length) box.innerHTML='<div class="hint" style="margin:0">此所尚無名單，請直接輸入。</div>';
+    names.forEach(n=>{ const b=document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=n;
+      b.onclick=()=>{modalClose();res(n);}; box.appendChild(b); });
+    m.querySelector(".m-ok").onclick=()=>{const v=inp.value.trim();modalClose();res(v||null);};
+    m.querySelector(".m-no").onclick=()=>{modalClose();res(null);};
+  });
+}
+function busy(on, msg, sub){
+  $("busy").style.display = on?"flex":"none";
+  if(msg!==undefined) $("busyMsg").textContent=msg;
+  $("busySub").textContent = sub||"";
+  if(!on) $("busyBar").style.width="0";
+}
+function busyProgress(p){ $("busyBar").style.width = Math.round(Math.max(0,Math.min(1,p))*100)+"%"; }
+
+/* ═════════ 下拉選單 ═════════ */
+function fillSelect(sel, items, placeholder, allowCustom){
+  const keep=sel.value; sel.innerHTML="";
+  const p=document.createElement("option"); p.value=""; p.textContent=placeholder; sel.appendChild(p);
+  items.forEach(v=>{ const o=document.createElement("option"); o.value=v; o.textContent=v; sel.appendChild(o); });
+  if(allowCustom){ const o=document.createElement("option"); o.value=CUSTOM; o.textContent="＋ 自行輸入…"; sel.appendChild(o); }
+  if(keep && keep!==CUSTOM) ensureOption(sel, keep);
+}
+function ensureOption(sel,val){
+  if(!val) return;
+  if(![...sel.options].some(o=>o.value===val)){
+    const o=document.createElement("option"); o.value=val; o.textContent=val;
+    const c=sel.querySelector('option[value="'+CUSTOM+'"]'); c? sel.insertBefore(o,c) : sel.appendChild(o);
+  }
+  sel.value=val;
+}
+function handleCustom(sel, label, after){
+  sel.addEventListener("change", async ()=>{
+    if(sel.value===CUSTOM){
+      const v = await askInput("請輸入"+label+"：");
+      if(v && v.trim()) ensureOption(sel, v.trim()); else sel.value="";
+    }
+    if(after) after();
+  });
+}
+function refreshListSelects(){
+  fillSelect($("s_officer"), lists.officers, lists.officers.length?"選擇執勤官":"（請先匯入名單）", true);
+  fillSelect($("s_member"), lists.members, lists.members.length?"選擇執勤員":"（請先匯入名單）", true);
+  fillSelect($("s_controller"), lists.controllers, lists.controllers.length?"選擇管制台":"（請先匯入名單）", true);
+}
+
+/* ═════════ 初始化 ═════════ */
+function init(){
+  $("ver").textContent = VERSION;
+  fillSelect($("f_bureau"), Object.keys(BUREAUS), "選擇分局");
+  fillSelect($("f_station"), [], "先選分局");
+  fillSelect($("f_caseType"), CASE_TYPES, "選擇案類", true);
+  refreshListSelects();
+  handleCustom($("s_officer"),"執勤官",saveSettings);
+  handleCustom($("s_member"),"執勤員",saveSettings);
+  handleCustom($("s_controller"),"管制台",saveSettings);
+  handleCustom($("f_caseType"),"案類",()=>$("f_caseType").classList.remove("ocr-warn"));
+
+  $("f_bureau").addEventListener("change", ()=>{
+    const b=$("f_bureau").value;
+    fillSelect($("f_station"), BUREAUS[b]||[], b?"選擇派出所":"先選分局");
+    onStationChange();
+  });
+  $("f_station").addEventListener("change", onStationChange);
+  ["f_duty","f_standby","f_patrol"].forEach(id=> $(id).addEventListener("input", renderChips));
+  $("f_acceptTime").addEventListener("input", ()=>{
+    const el=$("f_acceptTime"); const d=el.value.replace(/\D/g,"").slice(0,8);
+    el.value = d.length>4 ? d.slice(0,4)+"/"+d.slice(4) : d;
+  });
+  $("f_ecase").addEventListener("input", ()=>{ const el=$("f_ecase"); const p=el.selectionStart; el.value=el.value.toUpperCase().replace(/\s/g,""); try{el.setSelectionRange(p,p);}catch(e){} });
+  document.querySelectorAll("input").forEach(el=>el.addEventListener("input",()=>el.classList.remove("ocr-warn")));
+  $("s_date").addEventListener("change", saveSettings);
+  $("c_url").addEventListener("change", saveCloud);
+  $("c_token").addEventListener("change", saveCloud);
+  $("importFile").addEventListener("change", async e=>{
+    const f=e.target.files[0]; if(!f) return; $("importText").value = await f.text(); e.target.value=""; importSettings();
+  });
+
+  // 打字時收起頂部/底部固定列，避免鍵盤造成畫面跳動
+  document.addEventListener("focusin", e=>{ if(e.target.matches && e.target.matches("input,textarea")) document.body.classList.add("typing"); });
+  document.addEventListener("focusout", ()=>{ setTimeout(()=>{ const a=document.activeElement; if(!a||!a.matches||!a.matches("input,textarea")) document.body.classList.remove("typing"); },120); });
+
+  const t=new Date();
+  $("s_date").value = t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
+  const s=store.getJSON("supervise_settings",null);
+  if(s){ if(s.date) $("s_date").value=s.date; ensureOption($("s_officer"),s.officer); ensureOption($("s_member"),s.member); ensureOption($("s_controller"),s.controller); }
+  const c=store.getJSON("supervise_cloud",null);
+  if(c){ $("c_url").value=c.url||""; $("c_token").value=c.token||""; }
+  loadListTextareas();
+  renderList(); onStationChange(); updateDataStat();
+
+  const isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  const standalone = window.navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+  if(isIOS && !standalone && !store.get("supervise_tip_hidden")) $("installTip").style.display="block";
+  if(!lists.officers.length && !Object.keys(staffHist).length){
+    setTimeout(()=>toast("首次使用：請到最下方「匯入設定碼」匯入名單"), 600);
+  }
+}
+function hideTip(){ $("installTip").style.display="none"; store.set("supervise_tip_hidden","1"); }
+
+function saveSettings(){
+  store.setJSON("supervise_settings",{date:$("s_date").value, officer:$("s_officer").value, member:$("s_member").value, controller:$("s_controller").value});
+}
+function saveCloud(){ store.setJSON("supervise_cloud",{url:$("c_url").value.trim(), token:$("c_token").value}); }
+
+/* ═════════ 派出所名單、名冊 ═════════ */
+function stationNames(st){
+  const set=new Set();
+  Object.values(roster[st]||{}).forEach(n=>n&&set.add(n));
+  (staffHist[st]||[]).forEach(n=>n&&set.add(n));
+  return [...set];
+}
+function onStationChange(){
+  const st=$("f_station").value;
+  const dl=$("dlNames"); dl.innerHTML="";
+  stationNames(st).forEach(n=>{ const o=document.createElement("option"); o.value=n; dl.appendChild(o); });
+  $("rosterStation").textContent = st ? st+"派出所" : "（請先選派出所）";
+  const r=roster[st]||{};
+  $("rosterText").value = Object.keys(r).sort((a,b)=>a-b).map(k=>k+" "+r[k]).join("\n");
+  if(dutyResult && dutyResult.station!==st){ dutyResult=null; renderDutyPanel(); }
+}
+function learnName(st, name){
+  if(!st||!name) return;
+  staffHist[st]=staffHist[st]||[];
+  if(!staffHist[st].includes(name)){ staffHist[st].push(name); store.setJSON("supervise_history",staffHist); }
+}
+function setRoster(st, code, name){
+  if(!st||!code) return;
+  roster[st]=roster[st]||{};
+  if(name) roster[st][code]=name; else delete roster[st][code];
+  store.setJSON("supervise_roster",roster);
+  learnName(st,name);
+  onStationChange();
+}
+function saveRosterText(){
+  const st=$("f_station").value; if(!st){ toast("請先選派出所"); return; }
+  const out={};
+  $("rosterText").value.split(/\n/).forEach(line=>{
+    const m=line.trim().match(/^(\d{1,3})\s*[ \t:：、.,，]?\s*(\S+)/); if(m) out[String(+m[1])]=m[2];
+  });
+  roster[st]=out; store.setJSON("supervise_roster",roster);
+  Object.values(out).forEach(n=>learnName(st,n));
+  onStationChange(); renderDutyPanel(); toast("已儲存 "+Object.keys(out).length+" 人", true);
+}
+async function clearRoster(){
+  const st=$("f_station").value; if(!st) return;
+  if(!await askConfirm("清空「"+st+"」的代號名冊？（換月份、代號重排時使用）", true)) return;
+  delete roster[st]; store.setJSON("supervise_roster",roster); onStationChange(); renderDutyPanel(); toast("已清空");
+}
+function loadListTextareas(){
+  $("l_officers").value=lists.officers.join("\n"); $("l_members").value=lists.members.join("\n"); $("l_controllers").value=lists.controllers.join("\n");
+}
+function splitNames(t){ return [...new Set(String(t||"").split(/[\n,，、\s]+/).map(s=>s.trim()).filter(Boolean))]; }
+function saveLists(){
+  lists={officers:splitNames($("l_officers").value), members:splitNames($("l_members").value), controllers:splitNames($("l_controllers").value)};
+  store.setJSON("supervise_lists",lists); refreshListSelects(); saveSettings(); updateDataStat(); toast("名單已儲存", true);
+}
+function updateDataStat(){
+  const st=Object.keys(staffHist).length, nm=Object.values(staffHist).reduce((s,a)=>s+a.length,0), rs=Object.values(roster).reduce((s,o)=>s+Object.keys(o).length,0);
+  $("dataStat").textContent = "目前：執勤官 "+lists.officers.length+"、執勤員 "+lists.members.length+"、管制台 "+lists.controllers.length+"；派出所人員名單 "+st+" 所 "+nm+" 人；代號名冊 "+rs+" 筆。";
+}
+function importSettings(){
+  let d; try{ d=JSON.parse($("importText").value.trim()); }catch(e){ toast("內容格式不對，請完整複製設定碼"); return; }
+  if(d.lists){ ["officers","members","controllers"].forEach(k=>{ if(Array.isArray(d.lists[k])&&d.lists[k].length) lists[k]=d.lists[k]; }); store.setJSON("supervise_lists",lists); }
+  if(d.history){ for(const [st,arr] of Object.entries(d.history)){ staffHist[st]=[...new Set([...(staffHist[st]||[]),...arr])]; } store.setJSON("supervise_history",staffHist); }
+  if(d.roster){ for(const [st,o] of Object.entries(d.roster)){ roster[st]=Object.assign({},roster[st]||{},o); } store.setJSON("supervise_roster",roster); }
+  if(d.cloud&&d.cloud.url){ $("c_url").value=d.cloud.url; $("c_token").value=d.cloud.token||""; saveCloud(); }
+  refreshListSelects(); loadListTextareas(); onStationChange(); updateDataStat();
+  const s=store.getJSON("supervise_settings",null); if(s){ ensureOption($("s_officer"),s.officer); ensureOption($("s_member"),s.member); ensureOption($("s_controller"),s.controller); }
+  $("importText").value=""; toast("匯入完成", true);
+}
+async function exportSettings(){
+  const d={type:"督導勤務記錄設定", ver:VERSION, lists, history:staffHist, roster, cloud:store.getJSON("supervise_cloud",null)};
+  const ok = await copyText(JSON.stringify(d));
+  toast(ok?"已複製備份，可貼到記事本或傳給自己保存":"複製失敗", ok);
+}
+
+/* ═════════ 表單 ═════════ */
+function renderChips(){
+  const box=$("handlerChips"); box.innerHTML="";
+  [$("f_duty").value,$("f_standby").value,$("f_patrol").value].forEach(name=>{
+    if(name && name.trim()){
+      const c=document.createElement("button"); c.type="button"; c.className="chip"; c.textContent=name.trim();
+      c.onclick=()=>{ $("f_handler").value=name.trim(); }; box.appendChild(c);
+    }
+  });
+}
+function markCall(){
+  const t=new Date(); $("f_minutes").value=String(t.getMinutes()); $("f_minutes").classList.remove("ocr-warn");
+  toast("抽呼時間 "+t.getHours()+" 時 "+t.getMinutes()+" 分", true);
+}
+async function pickHandler(){
+  const st=$("f_station").value;
+  const n=await pickName("處理員警（受理人員）"+(st?"－"+st:""), stationNames(st), $("f_handler").value);
+  if(n){ $("f_handler").value=n; learnName(st,n); }
+}
+function fmtDate(iso){ if(!iso) return ""; const [y,m,d]=iso.split("-"); return parseInt(m)+"月"+parseInt(d)+"日"; }
+function collectForm(){
+  return {
+    dateISO:$("s_date").value, bureau:$("f_bureau").value, station:$("f_station").value,
+    duty:$("f_duty").value.trim(), standby:$("f_standby").value.trim(), patrol:$("f_patrol").value.trim(),
+    code:$("f_code").value.trim(), minutes:$("f_minutes").value.trim(), location:$("f_location").value.trim(),
+    ecase:$("f_ecase").value.trim(), caseType:($("f_caseType").value===CUSTOM?"":$("f_caseType").value),
+    acceptTime:$("f_acceptTime").value.trim(), handler:$("f_handler").value.trim(),
+    officer:$("s_officer").value===CUSTOM?"":$("s_officer").value, member:$("s_member").value===CUSTOM?"":$("s_member").value, controller:$("s_controller").value===CUSTOM?"":$("s_controller").value
+  };
+}
+function saveRecord(){
+  const r=collectForm();
+  if(!r.bureau||!r.station){ toast("請先選擇分局與派出所"); return; }
+  [r.duty,r.standby,r.patrol,r.handler].forEach(n=>learnName(r.station,n));
+  if(editingId!==null){
+    const i=records.findIndex(x=>x.id===editingId); if(i>-1) records[i]={...r,id:editingId};
+    editingId=null; restoreSettings(); toast("已更新紀錄", true);
+  } else { records.push({...r,id:Date.now()}); toast("已加入第 "+records.length+" 筆", true); }
+  persist(); renderList(); resetForm();
+}
+function persist(){ store.setJSON("supervise_records", records); }
+function restoreSettings(){
+  if(!settingsSnapshot) return;
+  $("s_date").value=settingsSnapshot.date; $("s_officer").value=settingsSnapshot.officer;
+  $("s_member").value=settingsSnapshot.member; $("s_controller").value=settingsSnapshot.controller;
+  settingsSnapshot=null; saveSettings();
+}
+function resetForm(){
+  ["f_duty","f_standby","f_patrol","f_code","f_minutes","f_location","f_ecase","f_acceptTime","f_handler"].forEach(id=>{$(id).value="";$(id).classList.remove("ocr-warn");});
+  $("f_bureau").value=""; fillSelect($("f_station"),[],"先選分局"); $("f_caseType").value=""; $("f_caseType").classList.remove("ocr-warn");
+  dutyResult=null; renderDutyPanel(); renderChips(); onStationChange();
+  $("ocrHint").style.display="none";
+  $("formTitle").textContent="新增紀錄"; $("btnSave").textContent="＋ 加入紀錄"; $("btnCancel").style.display="none";
+}
+function editRecord(id){
+  const r=records.find(x=>x.id===id); if(!r) return;
+  editingId=id;
+  if(!settingsSnapshot) settingsSnapshot={date:$("s_date").value, officer:$("s_officer").value, member:$("s_member").value, controller:$("s_controller").value};
+  if(r.dateISO) $("s_date").value=r.dateISO;
+  ensureOption($("s_officer"),r.officer); ensureOption($("s_member"),r.member); ensureOption($("s_controller"),r.controller);
+  $("f_bureau").value=r.bureau; fillSelect($("f_station"),BUREAUS[r.bureau]||[],"選擇派出所"); ensureOption($("f_station"),r.station);
+  $("f_duty").value=r.duty; $("f_standby").value=r.standby; $("f_patrol").value=r.patrol;
+  $("f_code").value=r.code; $("f_minutes").value=r.minutes; $("f_location").value=r.location;
+  $("f_ecase").value=r.ecase; if(r.caseType) ensureOption($("f_caseType"),r.caseType); else $("f_caseType").value="";
+  $("f_acceptTime").value=r.acceptTime; $("f_handler").value=r.handler;
+  onStationChange(); renderChips();
+  $("formTitle").textContent="編輯第 "+(records.findIndex(x=>x.id===id)+1)+" 筆";
+  $("btnSave").textContent="✓ 儲存修改"; $("btnCancel").style.display="block";
+  renderList(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function cancelEdit(){ editingId=null; restoreSettings(); resetForm(); renderList(); }
+async function delRecord(id){
+  if(!await askConfirm("刪除這筆紀錄？", true)) return;
+  records=records.filter(x=>x.id!==id); if(editingId===id) cancelEdit();
+  persist(); renderList(); toast("已刪除");
+}
+async function clearAll(){
+  if(!await askConfirm("確定清空全部 "+records.length+" 筆紀錄？\n（通常在上傳或貼回督導表後執行）", true)) return;
+  records=[]; editingId=null; persist(); renderList(); resetForm(); toast("已清空");
+}
+function renderList(){
+  const box=$("recList"); $("cnt").textContent=records.length;
+  $("listBadge").textContent = records.length?"點修改可補資料":"";
+  $("btnClear").style.display = records.length?"block":"none";
+  if(!records.length){ box.innerHTML='<div class="empty">尚無紀錄，於上方輸入後加入</div>'; return; }
+  box.innerHTML="";
+  records.forEach((r,i)=>{
+    const d=document.createElement("div"); d.className="rec"+(r.id===editingId?" editing":"");
+    const missing=[]; if(!r.duty)missing.push("值班"); if(!r.patrol)missing.push("巡邏"); if(!r.ecase)missing.push("案號"); if(!r.officer)missing.push("執勤官");
+    d.innerHTML='<div class="no">'+(i+1)+'</div><div class="body"><div class="t1">'+esc(r.bureau)+'・'+esc(r.station)+(r.caseType?'<span class="tag">'+esc(r.caseType)+'</span>':'')+'</div>'+
+      '<div class="t2">'+esc(fmtDate(r.dateISO))+(r.duty?'　值班 '+esc(r.duty):'')+(r.ecase?'<br>'+esc(r.ecase):'')+(missing.length?'<br><span style="color:var(--gold)">待補：'+missing.join("、")+'</span>':'')+'</div></div>'+
+      '<div class="acts"><button onclick="editRecord('+r.id+')">修改</button><button class="del" onclick="delRecord('+r.id+')">刪除</button></div>';
+    box.appendChild(d);
+  });
+}
+
+/* ═════════ 匯出：A–AD 共 30 欄，N–AA 留 14 格空白 ═════════ */
+function toRow(r){
+  return [fmtDate(r.dateISO), r.bureau, r.station, r.duty, r.standby, r.patrol, r.code, r.minutes, r.location,
+    r.ecase, r.caseType, r.acceptTime, r.handler, "","","","","","","","","","","","","","", r.officer, r.member, r.controller];
+}
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); let ok=false; try{ ok=document.execCommand("copy"); }catch(e2){} document.body.removeChild(ta); return ok;
+  }
+}
+async function copyAll(){
+  if(!records.length){ toast("尚無紀錄可複製"); return; }
+  const ok=await copyText(records.map(r=>toRow(r).join("\t")).join("\n"));
+  toast(ok?"已複製 "+records.length+" 筆，到 Excel 點 A 欄貼上":"複製失敗，請改用 Excel 下載", ok);
+}
+function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=()=>rej(new Error("load")); document.head.appendChild(s); }); }
+async function downloadXlsx(){
+  if(!records.length){ toast("尚無紀錄可匯出"); return; }
+  try{ if(typeof XLSX==="undefined") await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"); }
+  catch(e){ toast("無法下載 Excel 元件，請用「複製」"); return; }
+  const ws=XLSX.utils.aoa_to_sheet([HEADERS, ...records.map(toRow)]);
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "督導紀錄");
+  const t=new Date(), p=n=>String(n).padStart(2,"0");
+  XLSX.writeFile(wb, "督導紀錄_"+(t.getMonth()+1)+p(t.getDate())+".xlsx"); toast("已產生 Excel 檔", true);
+}
+async function testCloud(){
+  const url=$("c_url").value.trim(); if(!url){ toast("請先貼上 Apps Script 網址"); return; }
+  saveCloud(); toast("測試中…");
+  try{ const j=await (await fetch(url+"?token="+encodeURIComponent($("c_token").value))).json(); toast(j.ok?"✓ 連線正常":"連線失敗："+(j.msg||""), j.ok); }
+  catch(e){ toast("無法連線，請確認網址與網路"); }
+}
+async function uploadCloud(){
+  if(!records.length){ toast("尚無紀錄可上傳"); return; }
+  const url=$("c_url").value.trim(); if(!url){ toast("請先在「雲端同步」設定網址"); return; }
+  toast("上傳中…");
+  try{
+    const j=await (await fetch(url,{method:"POST",body:JSON.stringify({token:$("c_token").value, rows:records.map(toRow)})})).json();
+    if(j.ok){
+      toast("✓ 已上傳 "+j.added+" 筆到試算表", true);
+      if(await askConfirm("已成功上傳 "+j.added+" 筆。\n是否清空本機紀錄，避免下次重複上傳？")){ records=[]; editingId=null; persist(); renderList(); resetForm(); }
+    } else toast("上傳失敗："+(j.msg||"請檢查通行碼"));
+  }catch(e){ toast("無法連線，請確認網址與網路"); }
+}
+</script>
+
+<script>
+/* ═════════ 影像演算法（已用實際勤務表、報案單照片調校） ═════════ */
+const OCRCore = (()=>{
+function binarize(px,w,h,ch,mode,ratio){
+  const n=w*h,g=new Uint8Array(n);
+  for(let i=0;i<n;i++){const r=px[i*ch],gg=px[i*ch+1],b=px[i*ch+2];
+    const mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);
+    g[i]= mode==='ink' ? ((mx-mn>38)?255:mx) : ((r*0.3+gg*0.59+b*0.11)|0);}
+  const hist=new Uint32Array(256); for(let i=0;i<n;i++)hist[g[i]]++;
+  const pct=p=>{let s=0;for(let v=0;v<256;v++){s+=hist[v];if(s>=n*p)return v;}return 255;};
+  const dark=pct(0.02), paper=pct(0.6), th=dark+(paper-dark)*(ratio||0.35);
+  const out=new Uint8Array(n); for(let i=0;i<n;i++) out[i]= g[i]<th?1:0;
+  return out;
+}
+function components(b,w,h){
+  const lab=new Int32Array(w*h), comps=[]; let id=0; const st=[];
+  for(let s=0;s<w*h;s++){ if(!b[s]||lab[s])continue; id++; const c={x0:1e9,y0:1e9,x1:-1,y1:-1,area:0,id};
+    st.push(s); lab[s]=id;
+    while(st.length){const p=st.pop(),x=p%w,y=(p/w)|0; c.area++;
+      if(x<c.x0)c.x0=x;if(x>c.x1)c.x1=x;if(y<c.y0)c.y0=y;if(y>c.y1)c.y1=y;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;
+        if(nx<0||ny<0||nx>=w||ny>=h)continue;const q=ny*w+nx; if(b[q]&&!lab[q]){lab[q]=id;st.push(q);}}}
+    c.w=c.x1-c.x0+1;c.h=c.y1-c.y0+1;comps.push(c);}
+  return {lab,comps};
+}
+function removeLines(b,w,h){
+  const o=b.slice();
+  for(let y=0;y<h;y++){let s=-1;for(let x=0;x<=w;x++){const v=x<w&&b[y*w+x];
+    if(v&&s<0)s=x; if(!v&&s>=0){if(x-s>=w*0.4)for(let k=s;k<x;k++)o[y*w+k]=0;s=-1;}}}
+  for(let x=0;x<w;x++){let s=-1;for(let y=0;y<=h;y++){const v=y<h&&b[y*w+x];
+    if(v&&s<0)s=y; if(!v&&s>=0){if(y-s>=h*0.5)for(let k=s;k<y;k++)o[k*w+x]=0;s=-1;}}}
+  return o;
+}
+function segmentCodes(b0,w,h){
+  const b=removeLines(b0,w,h);
+  const {lab,comps}=components(b,w,h);
+  let cs=comps.filter(c=>{
+    const long=c.w>w*0.55||c.h>h*0.8, thin=(c.w>c.h*6)||(c.h>c.w*8&&c.h>h*0.4);
+    const edge=c.x0<=1||c.y0<=1||c.x1>=w-2||c.y1>=h-2;
+    if(long||thin) return false; if(edge&&c.area<c.w*c.h*0.15) return false; return c.area>=3;
+  });
+  cs=cs.filter(c=>{const edge=c.x0<=1||c.y0<=1||c.x1>=w-2||c.y1>=h-2; return !(edge&&(c.w<=3||c.h<=3||c.w>c.h*3||c.h>c.w*5));});
+  if(!cs.length) return {groups:[],lab,clean:null};
+  let maxH=0; cs.forEach(c=>{if(c.h>maxH)maxH=c.h;});
+  const big=cs.filter(c=>c.h>=maxH*0.45);
+  const medH=big.map(c=>c.h).sort((a,b)=>a-b)[big.length>>1]||maxH;
+  const digits=cs.filter(c=>c.h>=medH*0.55);
+  const dots=cs.filter(c=>c.h<medH*0.4&&c.w<medH*0.5&&c.h>=medH*0.1&&c.w>=medH*0.1&&c.w/c.h<2.2&&c.h/c.w<2.2&&c.area>=c.w*c.h*0.4);
+  digits.sort((a,b)=>(a.y0+a.y1)-(b.y0+b.y1));
+  const lines=[];
+  for(const d of digits){const cy=(d.y0+d.y1)/2;
+    let L=lines.find(l=>Math.abs(l.cy-cy)<medH*0.6);
+    if(!L){L={cy,items:[]};lines.push(L);} L.items.push(d); L.cy=L.items.reduce((s,i)=>s+(i.y0+i.y1)/2,0)/L.items.length;}
+  lines.sort((a,b)=>a.cy-b.cy);
+  const groups=[];
+  for(const L of lines){
+    L.items.sort((a,b)=>a.x0-b.x0);
+    const top=Math.min(...L.items.map(i=>i.y0)), bot=Math.max(...L.items.map(i=>i.y1));
+    let cur=[L.items[0]];
+    for(let k=1;k<L.items.length;k++){
+      const a=L.items[k-1],c=L.items[k];
+      const hasDot=dots.some(d=>d.x0>=a.x1-2&&d.x1<=c.x0+2&&d.y0>top+(bot-top)*0.55&&d.y1<=bot+medH*0.2);
+      if(hasDot||c.x0-a.x1>medH*0.9){groups.push(cur);cur=[c];} else cur.push(c);
+    }
+    groups.push(cur);
+  }
+  const keep=[...digits,...dots].map(c=>c.id);
+  const clean={x0:Math.min(...digits.map(c=>c.x0)),y0:Math.min(...digits.map(c=>c.y0)),x1:Math.max(...digits.map(c=>c.x1)),y1:Math.max(...digits.map(c=>c.y1)),n:digits.length,ids:keep};
+  return {clean,medH,lab,groups:groups.map(g=>({x0:Math.min(...g.map(c=>c.x0)),y0:Math.min(...g.map(c=>c.y0)),x1:Math.max(...g.map(c=>c.x1)),y1:Math.max(...g.map(c=>c.y1)),n:g.length,ids:g.map(c=>c.id)}))};
+}
+function renderGroup(lab,w,grp,targetH){
+  const gw=grp.x1-grp.x0+1, gh=grp.y1-grp.y0+1, s=targetH/gh, pad=Math.round(targetH*0.4);
+  const ow=Math.round(gw*s)+pad*2, oh=targetH+pad*2, o=new Uint8Array(ow*oh).fill(255);
+  const ids=new Set(grp.ids);
+  for(let y=0;y<oh;y++)for(let x=0;x<ow;x++){
+    const sx=Math.floor((x-pad)/s)+grp.x0, sy=Math.floor((y-pad)/s)+grp.y0;
+    if(sx<grp.x0||sy<grp.y0||sx>grp.x1||sy>grp.y1)continue;
+    if(ids.has(lab[sy*w+sx])) o[y*ow+x]=0;}
+  return {data:o,w:ow,h:oh};
+}
+function renderLine(lab,w,groups,targetH){
+  const parts=groups.map(g=>renderGroup(lab,w,g,targetH));
+  const gap=Math.round(targetH*0.2), H=Math.max(...parts.map(p=>p.h));
+  const W=parts.reduce((s,p)=>s+p.w,0)+gap*(parts.length-1);
+  const o=new Uint8Array(W*H).fill(255); let ox=0;
+  for(const p of parts){for(let y=0;y<p.h;y++)for(let x=0;x<p.w;x++)o[y*W+ox+x]=p.data[y*p.w+x]; ox+=p.w+gap;}
+  return {data:o,w:W,h:H};
+}
+// e化案號：Z + 6碼數字 + AW + 6碼英數
+function fixCaseNo(raw){
+  let s=(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const i=s.search(/[Z7]\d{5,6}/); if(i>0) s=s.slice(i);
+  const toD={O:'0',Q:'0',D:'0',I:'1',L:'1',T:'1',Z:'2',S:'5',B:'8',G:'6',A:'4'};
+  const a=s.split('');
+  if(a.length<13) return {value:s,ok:false};
+  a[0]='Z'; for(let k=1;k<=6;k++) if(toD[a[k]]) a[k]=toD[a[k]];
+  let rest=a.slice(7).join('').replace(/^4W|^AVV|^4VV/,'AW');
+  if(!rest.startsWith('AW')) rest='AW'+rest.replace(/^A?W?/,'');
+  const v='Z'+a.slice(1,7).join('')+rest;
+  const ok=/^Z\d{6}AW[A-Z0-9]{6}$/.test(v);
+  return {value:v.slice(0,15),ok};
+}
+// 受理時間：多次辨識結果逐欄投票
+function voteTime(texts){
+  const pools={M:{},D:{},h:{},m:{}};
+  const add=(k,v,lo,hi)=>{ if(v==null) return; const n=+v; if(n>=lo&&n<=hi) pools[k][n]=(pools[k][n]||0)+1; };
+  for(const t0 of texts){ const t=String(t0||'').replace(/\s/g,'');
+    add('M',(t.match(/年(\d{1,2})月/)||[])[1],1,12);
+    add('D',(t.match(/月(\d{1,2})日/)||[])[1],1,31);
+    add('h',(t.match(/日(\d{1,2})時/)||[])[1],0,23);
+    add('m',(t.match(/時(\d{1,2})分/)||[])[1],0,59);
+  }
+  // 辨識常「漏字」：23 被讀成 2、11 被讀成 1。兩位數至少出現 2 次時，把它包含的一位數票數併入
+  for(const k in pools){ const P=pools[k];
+    for(const a of Object.keys(P)) for(const b of Object.keys(P)){
+      if(a.length===1&&b.length===2&&b.includes(a)&&P[b]>=2&&P[a]){ P[b]+=P[a]; P[a]=0; } } }
+  const best=k=>{ let bv=null,bc=0; for(const [v,c] of Object.entries(pools[k])) if(c>bc){bc=c;bv=+v;} return {v:bv,c:bc}; };
+  const M=best('M'),D=best('D'),h=best('h'),m=best('m');
+  if(M.v==null||D.v==null||h.v==null||m.v==null) return null;
+  const p=n=>String(n).padStart(2,'0');
+  return {value:p(M.v)+p(D.v)+'/'+p(h.v)+p(m.v), sure:Math.min(M.c,D.c,h.c,m.c)>=2};
+}
+function parseCaseType(text,list){
+  const c=String(text||'').replace(/\s/g,'');
+  const m=c.match(/刑案[（(]([^)）]{1,14})[)）]/); if(!m) return null;
+  const raw=m[1]; let best=null,score=0;
+  for(const t of list){let s=0;for(const ch of t) if(raw.includes(ch)) s++; const r=s/Math.max(t.length,raw.length); if(r>score){score=r;best=t;}}
+  return score>=0.5?best:raw;
+}
+function splitCodes(s){ return String(s||'').split(/[^0-9]+/).filter(Boolean).map(x=>String(+x)); }
+return {binarize,segmentCodes,renderGroup,renderLine,fixCaseNo,voteTime,parseCaseType,splitCodes};
+})();
+
+/* ═════════ 辨識引擎（Tesseract，首次使用時才下載） ═════════ */
+const OCR = {
+  base: window.OCR_BASE || "https://cdn.jsdelivr.net/npm/",
+  lib:null, workers:{}, q:Promise.resolve(),
+  loadLib(){
+    if(!this.lib) this.lib = loadScript(this.base+"tesseract.js@5.1.1/dist/tesseract.min.js").catch(e=>{ this.lib=null; throw new Error("辨識元件下載失敗，請確認網路"); });
+    return this.lib;
+  },
+  async worker(lang){
+    if(!this.workers[lang]){
+      this.workers[lang] = (async()=>{
+        await this.loadLib();
+        return Tesseract.createWorker(lang, 1, {
+          workerPath: this.base+"tesseract.js@5.1.1/dist/worker.min.js",
+          corePath: this.base+"tesseract.js-core@5.1.1",
+          langPath: this.base+"@tesseract.js-data/"+lang+"/4.0.0_best_int",
+          logger: m=>{ if(m.status&&m.status.indexOf("loading")===0){ $("busySub").textContent="首次使用下載辨識資料…"+Math.round((m.progress||0)*100)+"%"; } }
+        });
+      })().catch(e=>{ delete this.workers[lang]; throw e; });
+    }
+    return this.workers[lang];
+  },
+  run(lang, canvas, params){
+    const job = this.q.then(async()=>{
+      const w = await this.worker(lang);
+      await w.setParameters(Object.assign({tessedit_char_whitelist:"", tessedit_pageseg_mode:"3"}, params||{}));
+      const {data} = await w.recognize(canvas);
+      return data;
+    });
+    this.q = job.catch(()=>{});
+    return job;
+  }
+};
+
+/* ═════════ 影像工具 ═════════ */
+async function loadPhoto(file){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=new Image(); img.src=url; await img.decode();
+    const max=3200, s=Math.min(1, max/Math.max(img.naturalWidth,img.naturalHeight));
+    const c=document.createElement("canvas"); c.width=Math.round(img.naturalWidth*s); c.height=Math.round(img.naturalHeight*s);
+    const x=c.getContext("2d"); x.imageSmoothingQuality="high"; x.drawImage(img,0,0,c.width,c.height);
+    return c;
+  } finally { URL.revokeObjectURL(url); }
+}
+function cropPixels(src, r, W, H){
+  const c=document.createElement("canvas"); c.width=W; c.height=H;
+  const x=c.getContext("2d",{willReadFrequently:true}); x.imageSmoothingEnabled=true; x.imageSmoothingQuality="high";
+  x.fillStyle="#fff"; x.fillRect(0,0,W,H); x.drawImage(src, r.x,r.y,r.w,r.h, 0,0,W,H);
+  return x.getImageData(0,0,W,H).data;
+}
+function binCanvas(b,w,h){
+  const c=document.createElement("canvas"); c.width=w; c.height=h; const x=c.getContext("2d");
+  const im=x.createImageData(w,h); for(let i=0;i<w*h;i++){ const v=b[i]?0:255; im.data[i*4]=im.data[i*4+1]=im.data[i*4+2]=v; im.data[i*4+3]=255; }
+  x.putImageData(im,0,0); return c;
+}
+function grayCanvas(o){
+  const c=document.createElement("canvas"); c.width=o.w; c.height=o.h; const x=c.getContext("2d");
+  const im=x.createImageData(o.w,o.h); for(let i=0;i<o.w*o.h;i++){ const v=o.data[i]; im.data[i*4]=im.data[i*4+1]=im.data[i*4+2]=v; im.data[i*4+3]=255; }
+  x.putImageData(im,0,0); return c;
+}
+function pickPhoto(){
+  return new Promise(res=>{
+    const inp=$("photoInput"); inp.value="";
+    inp.onchange=()=>res(inp.files[0]||null);
+    inp.click();
+  });
+}
+
+/* ═════════ 框選器：單指拖曳框選、雙指縮放移動；「放大」模式下框住的範圍會放大 ═════════ */
+const Picker = {
+  open(img, steps){
+    return new Promise(resolve=>{
+      const P=this; P.img=img; P.steps=steps; P.i=0; P.res={}; P.drag=null; P.pts=new Map(); P.pinch=null;
+      P.resolve=resolve; P.mode=steps[0].mode;
+      $("picker").style.display="flex"; document.body.style.overflow="hidden";
+      P.cv=$("pkCanvas"); P.bind(); P.update();
+      requestAnimationFrame(()=>{ P.fitAll(); P.draw(); });
+    });
+  },
+  size(){ return {cw:this.cv.clientWidth, ch:this.cv.clientHeight}; },
+  fitAll(){ const {cw,ch}=this.size(); this.s=Math.min(cw/this.img.width, ch/this.img.height); this.cx=this.img.width/2; this.cy=this.img.height/2; },
+  fitRect(r){ const {cw,ch}=this.size(); this.s=Math.min(cw/r.w, ch/r.h)*0.9; this.cx=r.x+r.w/2; this.cy=r.y+r.h/2; this.clamp(); },
+  clamp(){ const {cw,ch}=this.size(); const minS=Math.min(cw/this.img.width, ch/this.img.height)*0.9;
+    this.s=Math.max(minS, Math.min(this.s, 12));
+    this.cx=Math.max(0,Math.min(this.img.width,this.cx)); this.cy=Math.max(0,Math.min(this.img.height,this.cy)); },
+  toImg(px,py){ const {cw,ch}=this.size(); return {x:(px-cw/2)/this.s+this.cx, y:(py-ch/2)/this.s+this.cy}; },
+  toScr(ix,iy){ const {cw,ch}=this.size(); return {x:(ix-this.cx)*this.s+cw/2, y:(iy-this.cy)*this.s+ch/2}; },
+  bind(){
+    if(this.bound) return; this.bound=true; const P=this, cv=$("pkCanvas");
+    const pos=e=>{ const r=cv.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; };
+    const two=()=>{ const a=[...P.pts.values()]; return {mx:(a[0].x+a[1].x)/2, my:(a[0].y+a[1].y)/2, d:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1}; };
+    cv.addEventListener("pointerdown",e=>{ e.preventDefault(); try{cv.setPointerCapture(e.pointerId);}catch(_){}
+      P.pts.set(e.pointerId,pos(e));
+      if(P.pts.size===2){ P.drag=null; const t=two(); P.pinch={d:t.d, s:P.s, img:P.toImg(t.mx,t.my)}; }
+      else if(P.pts.size===1){ const p=pos(e); P.drag={x0:p.x,y0:p.y,x1:p.x,y1:p.y}; }
+      P.draw(); });
+    cv.addEventListener("pointermove",e=>{ if(!P.pts.has(e.pointerId)) return; e.preventDefault(); P.pts.set(e.pointerId,pos(e));
+      if(P.pinch&&P.pts.size>=2){ const t=two(); const {cw,ch}=P.size();
+        P.s=P.pinch.s*t.d/P.pinch.d; P.cx=P.pinch.img.x-(t.mx-cw/2)/P.s; P.cy=P.pinch.img.y-(t.my-ch/2)/P.s; P.clamp(); P.draw(); return; }
+      if(P.drag){ const p=pos(e); P.drag.x1=p.x; P.drag.y1=p.y; P.draw(); } });
+    const up=e=>{ if(!P.pts.has(e.pointerId)) return; P.pts.delete(e.pointerId);
+      if(P.pinch){ if(P.pts.size===0) P.pinch=null; P.drag=null; P.draw(); return; }
+      if(P.drag){ const d=P.drag; P.drag=null; if(e.type==="pointerup") P.finish(d); else P.draw(); } };
+    cv.addEventListener("pointerup",up); cv.addEventListener("pointercancel",up);
+    cv.addEventListener("wheel",e=>{ e.preventDefault(); const p=pos(e), before=P.toImg(p.x,p.y); P.s*=e.deltaY<0?1.15:1/1.15; P.clamp();
+      const {cw,ch}=P.size(); P.cx=before.x-(p.x-cw/2)/P.s; P.cy=before.y-(p.y-ch/2)/P.s; P.clamp(); P.draw(); },{passive:false});
+    window.addEventListener("resize",()=>{ if($("picker").style.display==="flex") P.draw(); });
+    $("pkMode").onclick=()=>{ P.mode = P.mode==="zoom"?"select":"zoom"; P.update(); };
+    $("pkReset").onclick=()=>{ P.fitAll(); P.draw(); };
+    $("pkSkip").onclick=()=>{ P.res[P.steps[P.i].key]=null; P.next(); };
+    $("pkCancel").onclick=()=>{ P.close(null); };
+  },
+  update(){
+    const s=this.steps[this.i];
+    $("pkStep").textContent="步驟 "+(this.i+1)+" / "+this.steps.length;
+    $("pkMsg").textContent=s.msg;
+    $("pkModeTxt").textContent = (this.mode==="zoom" ? "放大模式：框住的範圍會放大" : "框選模式：框住目標後自動進下一步")+"　｜　雙指可縮放移動";
+    $("pkMode").textContent = this.mode==="zoom" ? "🔍 放大中" : "🔍 放大";
+    $("pkMode").classList.toggle("on", this.mode==="zoom");
+    this.draw();
+  },
+  draw(){
+    const cv=this.cv; if(!cv) return; const dpr=Math.min(2,window.devicePixelRatio||1);
+    const {cw,ch}=this.size(); if(!cw||!ch) return; if(!this.s) this.fitAll();
+    if(cv.width!==Math.round(cw*dpr)||cv.height!==Math.round(ch*dpr)){ cv.width=Math.round(cw*dpr); cv.height=Math.round(ch*dpr); }
+    const x=cv.getContext("2d"); x.setTransform(dpr,0,0,dpr,0,0);
+    x.fillStyle="#0B1120"; x.fillRect(0,0,cw,ch);
+    const o=this.toScr(0,0); x.imageSmoothingEnabled=true; x.imageSmoothingQuality="high";
+    x.drawImage(this.img, o.x, o.y, this.img.width*this.s, this.img.height*this.s);
+    x.lineWidth=2; x.font="bold 13px sans-serif";
+    for(const st of this.steps){ const r=this.res[st.key]; if(!r||st.mode==="zoom") continue;
+      const a=this.toScr(r.x,r.y); x.strokeStyle="#4ADE80"; x.strokeRect(a.x,a.y,r.w*this.s,r.h*this.s);
+      x.fillStyle="#4ADE80"; x.fillText(st.label||"", a.x, a.y-4); }
+    if(this.drag){ const d=this.drag; x.strokeStyle= this.mode==="zoom"?"#60A5FA":"#E8B84A"; x.lineWidth=2.5; x.setLineDash([6,4]);
+      x.strokeRect(Math.min(d.x0,d.x1),Math.min(d.y0,d.y1),Math.abs(d.x1-d.x0),Math.abs(d.y1-d.y0)); x.setLineDash([]); }
+  },
+  finish(d){
+    const w=Math.abs(d.x1-d.x0), h=Math.abs(d.y1-d.y0);
+    if(w<12||h<8){ this.draw(); return; }
+    const a=this.toImg(Math.min(d.x0,d.x1),Math.min(d.y0,d.y1));
+    const r={x:Math.max(0,a.x), y:Math.max(0,a.y)}; r.w=Math.min(this.img.width-r.x, w/this.s); r.h=Math.min(this.img.height-r.y, h/this.s);
+    if(r.w<4||r.h<4){ this.draw(); return; }
+    const step=this.steps[this.i];
+    if(this.mode==="zoom"){
+      this.fitRect(r);
+      if(step.mode==="zoom"){ this.res[step.key]=r; this.next(); return; }
+      this.mode="select"; this.update(); return;
+    }
+    this.res[step.key]=r; this.next();
+  },
+  next(){
+    this.i++;
+    if(this.i>=this.steps.length){ this.close(this.res); return; }
+    this.mode=this.steps[this.i].mode; this.update();
+  },
+  close(v){ $("picker").style.display="none"; document.body.style.overflow=""; this.pts.clear(); this.pinch=null; this.s=0;
+    const r=this.resolve; this.resolve=null; if(r) r(v); }
+};
+
+/* ═════════ 勤務表：代號格辨識 ═════════ */
+async function ocrCodes(src, r){
+  const scale=Math.min(6, Math.max(1, 160/r.h));
+  const W=Math.max(8,Math.round(r.w*scale)), H=Math.max(8,Math.round(r.h*scale));
+  const px=cropPixels(src, r, W, H);
+  const b=OCRCore.binarize(px,W,H,4,"lum",0.35);
+  const seg=OCRCore.segmentCodes(b,W,H);
+  if(!seg.groups.length) return "";
+  const need=seg.groups.reduce((s,g)=>s+g.n,0);
+  // A：整格（保留小數點、可多行）
+  const sc=48/seg.medH;
+  const ra=OCRCore.renderGroup(seg.lab,W,seg.clean,Math.max(20,Math.round((seg.clean.y1-seg.clean.y0+1)*sc)));
+  const da=await OCR.run("eng", grayCanvas(ra), {tessedit_char_whitelist:"0123456789.", tessedit_pageseg_mode:"6"});
+  const A=da.text.trim().replace(/\n+/g,".").replace(/[^0-9.]/g,"").replace(/\.+/g,".").replace(/^\.|\.$/g,"");
+  // B：自行切割後整行
+  const rb=OCRCore.renderLine(seg.lab,W,seg.groups,48);
+  const db=await OCR.run("eng", grayCanvas(rb), {tessedit_char_whitelist:"0123456789", tessedit_pageseg_mode:"7"});
+  const d=db.text.replace(/\D/g,"");
+  let B=null; if(d.length===need){ let p=0; B=seg.groups.map(g=>{const s=d.slice(p,p+g.n); p+=g.n; return s;}).join("."); }
+  const Ad=A.replace(/\D/g,"");
+  return ((A.includes(".")||seg.groups.length===1) && Ad.length===need) ? A : (B||A);
+}
+const ROLES=[["duty","值班","f_duty"],["patrol","巡邏","f_patrol"],["standby","備勤","f_standby"]];
+async function startDuty(){
+  const st=$("f_station").value;
+  if(!st){ toast("請先選分局、派出所（代號名冊依派出所分開記）"); return; }
+  const file=await pickPhoto(); if(!file) return;
+  let img; try{ busy(true,"讀取照片…"); img=await loadPhoto(file); } catch(e){ busy(false); toast("照片讀取失敗"); return; } busy(false);
+  const res=await Picker.open(img,[
+    {key:"row",mode:"zoom",msg:"框住「18–19」這一列（值班、巡邏、備勤格都要框進去），畫面會放大"},
+    {key:"duty",mode:"select",label:"值班",msg:"框選【值班】的代號格"},
+    {key:"patrol",mode:"select",label:"巡邏",msg:"框選【巡邏】的代號格"},
+    {key:"standby",mode:"select",label:"備勤",msg:"框選【備勤】的代號格"}
+  ]);
+  if(!res) return;
+  const todo=ROLES.filter(([k])=>res[k]);
+  if(!todo.length){ toast("沒有框選任何格子"); return; }
+  busy(true,"辨識代號中…"); busyProgress(0.05);
+  dutyResult={station:st};
+  try{
+    for(let i=0;i<todo.length;i++){ const [k,lab]=todo[i]; $("busyMsg").textContent="辨識【"+lab+"】代號…";
+      dutyResult[k]=await ocrCodes(img,res[k]); busyProgress((i+1)/todo.length); }
+  }catch(e){ busy(false); toast(e.message||"辨識失敗，請確認網路後再試"); return; }
+  busy(false);
+  // 自動帶入已知姓名
+  for(const [k,,field] of ROLES){
+    const codes=OCRCore.splitCodes(dutyResult[k]); const r=roster[st]||{};
+    if(codes.length && r[codes[0]] && !$(field).value){ $(field).value=r[codes[0]]; }
+  }
+  renderChips(); renderDutyPanel();
+  const unknown=ROLES.some(([k])=>OCRCore.splitCodes(dutyResult[k]).some(c=>!(roster[st]||{})[c]));
+  toast(unknown?"辨識完成：虛線代號請點一下指定姓名（只需一次）":"辨識完成，請核對代號", true);
+}
+function renderDutyPanel(){
+  const box=$("dutyPanel");
+  if(!dutyResult){ box.innerHTML=""; return; }
+  const st=dutyResult.station, r=roster[st]||{};
+  box.innerHTML='<div class="panel"><div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:4px">勤務表辨識結果（代號可修改；點姓名帶入欄位）</div></div>';
+  const panel=box.firstChild;
+  for(const [k,lab,field] of ROLES){
+    const row=document.createElement("div"); row.className="prow";
+    row.innerHTML='<div class="plabel">'+lab+'</div><input inputmode="decimal" value="'+esc(dutyResult[k]||"")+'" placeholder="代號"><div class="chips"></div>';
+    const inp=row.querySelector("input"), chips=row.querySelector(".chips");
+    inp.addEventListener("change",()=>{ dutyResult[k]=inp.value.trim(); renderDutyPanel(); });
+    for(const code of OCRCore.splitCodes(dutyResult[k])){
+      const name=r[code]; const c=document.createElement("button"); c.type="button";
+      c.className="chip"+(name?"":" unknown");
+      c.innerHTML='<span class="cd">'+esc(code)+'</span>'+(name?esc(name):"指定姓名");
+      c.onclick=async()=>{
+        if(name){ $(field).value=name; renderChips(); toast(lab+"："+name, true); return; }
+        const n=await pickName("「"+st+"」代號 "+code+" 是誰？\n（記住後下次自動帶出）", stationNames(st));
+        if(n){ setRoster(st,code,n); $(field).value=n; renderChips(); renderDutyPanel(); }
+      };
+      chips.appendChild(c);
+      if(name){ const e=document.createElement("button"); e.type="button"; e.className="chip"; e.style.padding="6px 9px"; e.textContent="✎";
+        e.title="改代號 "+code+" 的姓名";
+        e.onclick=async()=>{ const n=await pickName("修改「"+st+"」代號 "+code+" 的姓名", stationNames(st), name); if(n){ setRoster(st,code,n); renderDutyPanel(); } };
+        chips.appendChild(e); }
+    }
+    panel.appendChild(row);
+  }
+}
+
+/* ═════════ 報案證明單：案號、案類、受理時間 ═════════ */
+async function ocrCaseNo(src, r){
+  const votes={}; let fallback="";
+  for(const th of [90,130,170]) for(const ratio of [0.35,0.45]){
+    const scale=th/r.h, W=Math.max(8,Math.round(r.w*scale)), H=Math.max(8,Math.round(r.h*scale));
+    const b=OCRCore.binarize(cropPixels(src,r,W,H),W,H,4,"ink",ratio);
+    const d=await OCR.run("eng", binCanvas(b,W,H), {tessedit_char_whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", tessedit_pageseg_mode:"7"});
+    const f=OCRCore.fixCaseNo(d.text);
+    if(f.ok) votes[f.value]=(votes[f.value]||0)+1; else if(!fallback) fallback=f.value;
+    busyProgress(0.05+0.35*(Object.values(votes).reduce((s,c)=>s+c,0)+(fallback?1:0))/6);
+  }
+  let best=null,bc=0; for(const [v,c] of Object.entries(votes)) if(c>bc){bc=c;best=v;}
+  return best?{value:best,sure:bc>=3}:(fallback?{value:fallback,sure:false}:null);
+}
+async function ocrReportPage(src){
+  let W=2800, s=W/src.width, H=Math.round(src.height*s);
+  if(W*H>11e6){ s=Math.sqrt(11e6/(src.width*src.height)); W=Math.round(src.width*s); H=Math.round(src.height*s); }
+  const b=OCRCore.binarize(cropPixels(src,{x:0,y:0,w:src.width,h:src.height},W,H),W,H,4,"ink",0.5);
+  const data=await OCR.run("chi_tra", binCanvas(b,W,H), {tessedit_pageseg_mode:"3"});
+  const text=data.text||"";
+  const out={caseType:OCRCore.parseCaseType(text,CASE_TYPES), caseNo:null, time:null};
+  const cs=text.toUpperCase().replace(/\s/g,"").match(/[Z7][0-9OQDILSBG]{6}[A4][WV]{1,2}[A-Z0-9]{6}/);
+  if(cs){ const f=OCRCore.fixCaseNo(cs[0]); if(f.ok) out.caseNo=f.value; }
+  // 受理時間：找到那一行再精讀幾次投票
+  const texts=[text];
+  const lines=(data.lines||[]).filter(l=>/\d+\s*年\s*\d+\s*月/.test(l.text));
+  const L=lines.find(l=>/理/.test(l.text))||lines[0];
+  if(L){
+    const bb=L.bbox, padY=(bb.y1-bb.y0)*0.4;
+    const r={x:Math.max(0,bb.x0/s-10), y:Math.max(0,(bb.y0-padY)/s)}; r.w=Math.min(src.width-r.x,(bb.x1-bb.x0)/s+20); r.h=Math.min(src.height-r.y,(bb.y1-bb.y0+padY*2)/s);
+    let k=0;
+    for(const th of [70,100,130]) for(const ratio of [0.35,0.5]){
+      const sc=th/r.h, w2=Math.max(8,Math.round(r.w*sc)), h2=Math.max(8,Math.round(r.h*sc));
+      const bb2=OCRCore.binarize(cropPixels(src,r,w2,h2),w2,h2,4,"ink",ratio);
+      const d=await OCR.run("chi_tra", binCanvas(bb2,w2,h2), {tessedit_char_whitelist:"0123456789年月日時分", tessedit_pageseg_mode:"7"});
+      texts.push(d.text); busyProgress(0.7+0.3*(++k)/6);
+    }
+  }
+  out.time=OCRCore.voteTime(texts); 
+  return out;
+}
+async function startReport(){
+  const file=await pickPhoto(); if(!file) return;
+  let img; try{ busy(true,"讀取照片…"); img=await loadPhoto(file); } catch(e){ busy(false); toast("照片讀取失敗"); return; } busy(false);
+  const res=await Picker.open(img,[
+    {key:"caseZoom",mode:"zoom",msg:"先框住上方「e化案號」那一帶放大（不需要可按略過）"},
+    {key:"case",mode:"select",label:"案號",msg:"框選 e化案號 那一串英數字（不含「e化案號：」字樣）"}
+  ]);
+  if(!res) return;
+  busy(true,"辨識中…"); busyProgress(0.03);
+  const found=[];
+  try{
+    let cn=null;
+    if(res.case){ $("busyMsg").textContent="辨識 e化案號…"; cn=await ocrCaseNo(img,res.case); }
+    $("busyMsg").textContent="辨識案類、受理時間…"; busyProgress(0.4);
+    const pg=await ocrReportPage(img);
+    if(!cn && pg.caseNo) cn={value:pg.caseNo,sure:false};
+    if(cn){ $("f_ecase").value=cn.value; $("f_ecase").classList.add("ocr-warn"); found.push("案號"); }
+    if(pg.caseType){ if(CASE_TYPES.includes(pg.caseType)) $("f_caseType").value=pg.caseType; else ensureOption($("f_caseType"),pg.caseType); $("f_caseType").classList.add("ocr-warn"); found.push("案類"); }
+    if(pg.time){ $("f_acceptTime").value=pg.time.value; $("f_acceptTime").classList.add("ocr-warn"); found.push("受理時間"); }
+  }catch(e){ busy(false); toast(e.message||"辨識失敗，請確認網路後再試"); return; }
+  busy(false);
+  $("ocrHint").style.display = found.length?"block":"none";
+  toast(found.length?"已帶入："+found.join("、")+"（金框請核對）":"沒有辨識到資料，請手動輸入或重拍", !!found.length);
+}
+$("f_caseType").addEventListener("change",()=>$("f_caseType").classList.remove("ocr-warn"));
+
+init();
+if("serviceWorker" in navigator && location.protocol==="https:"){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+</script>
+</body>
+</html>
